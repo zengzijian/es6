@@ -10,11 +10,17 @@
         .active{
             color: red;
         }
+        .bar {
+            color:blue;
+        }
+        .bigSize {
+            font-size: 24px;
+        }
     </style>
 </head>
 <body>
 <div id="app">
-    <p>{{message}}</p>
+    <p :style="styleObject">{{message}}</p>
     <p>{{reverseMessage}}</p>
 </div>
 <div id="app-2">
@@ -23,7 +29,7 @@
         </span>
 </div>
 <div id="app-3">
-    <p v-if="seen">看到了</p>
+    <p v-show="seen">看到了</p>
 </div>
 <div id="app4">
     <ol>
@@ -46,6 +52,7 @@
                 v-for="item in list"
                 v-bind:todo="item"
                 v-bind:key="item.id"
+                v-bind:class="{bigSize:isBigSize}"
         ></todo-item>
     </ol>
 </div>
@@ -57,9 +64,33 @@
     <p>{{answer}}</p>
 </div>
 
+<div id="app9">
+    <template v-if="ok">
+        <label>username</label>
+        <input placeholder="Enter your username" key="username-input">
+    </template>
+    <template v-else>
+        <label>Email</label>
+        <input placeholder="Enter your email address" key="email-input">
+    </template>
+    <button @click="toggle">toggle</button>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/lodash@4.13.1/lodash.min.js"></script>
 <script>
+    var app9 = new Vue({
+        el:"#app9",
+        data:{
+            ok: false
+        },
+        methods:{
+            toggle:function() {
+                this.ok = !this.ok;
+            }
+        }
+    });
+
     var watchVm = new Vue({
         el:"#watch",
         data:{
@@ -95,7 +126,14 @@
     });
 
     var data = {
-        message:"hello world!"
+        message:"hello world!",
+        styleObject: {
+            width: 200 + 'px',
+            height: 100 + 'px',
+            display: 'block',
+            backgroundColor: "yellow",
+            textAlign: "center",
+        }
     }
     var app = new Vue({
         el:"#app",
@@ -128,7 +166,7 @@
     var app3 = new Vue({
         el:"#app-3",
         data:{
-            seen: true
+            seen: false
         }
     });
 
@@ -164,11 +202,12 @@
 
     Vue.component("todo-item", {
         props:["todo"],
-        template:'<li>{{todo.text}}</li>'
+        template:'<li class="bar">{{todo.text}}</li>'
     });
     var app7 = new Vue({
         el:"#app7",
         data:{
+            isBigSize:true,
             list:[
                 {id:1, text:"aaaaa"},
                 {id:2, text:"bbbbb"},
