@@ -76,9 +76,171 @@
     <button @click="toggle">toggle</button>
 </div>
 
+<div id="app10">
+    <ul>
+        <li v-for="(item, index) in items" :key="item.id">
+            {{parentMessage}} - {{index}} - {{item.message}}
+        </li>
+        <li v-for="(value, key, index) of object" :key="value.id">
+            {{index}} . {{key}} : {{value}}
+        </li>
+        <li v-for="n in even(numbers)">{{n}}</li>
+        <li v-for="n in 5">{{n}}</li>
+    </ul>
+</div>
+
+<div id="todo-list">
+    <form v-on:submit.prevent = "addNewTodo">
+        <label for="new-todo">add a todo</label>
+        <input v-model="newTodoText" id="new-todo" placeholder="...">
+        <button>add</button>
+    </form>
+    <ul>
+        <li
+                is="todo-item1"
+                v-for="(item,index) in todos"
+                :key="item.id"
+                :title="item.title"
+                @remove="removeItem(index)"
+        ></li>
+    </ul>
+</div>
+
+<div id="app11">
+    <input type="checkbox" id="jack" value="jack" v-model="checkNames">
+    <label for="jack">jack</label>
+    <p>ckecked names:{{checkNames}}</p>
+
+    <select multiple v-model="selected" >
+    <!--<option disabled  value="">请选择</option>-->
+    <option>A</option>
+    <option>B</option>
+    <option>C</option>
+    </select>
+    <span>Selected: {{ selected }}</span>
+</div>
+
+<div id="app12">
+    <div :style="{fontSize:postFontSize+'em'}">
+        <blog-post
+            v-for="post in posts"
+            :key="post.id"
+            :post="post"
+            @enlarge-text="enlargeFontSize"
+        >slot?????</blog-post>
+    </div>
+    <input-com v-model="inputText"></input-com>
+    <span>{{inputText}}</span>
+</div>
+
+
+
 <script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/lodash@4.13.1/lodash.min.js"></script>
 <script>
+
+    Vue.component("input-com", {
+        props:['value'],
+        template: `
+            <input
+                :value="value"
+                @input="$emit('input', $event.target.value)"
+            >
+        `
+    });
+
+    Vue.component("blog-post", {
+        props:["post"],
+        template: `
+            <div>
+                <h3 v-html="post.title"></h3>
+                <slot></slot>
+                <button @click="$emit('enlarge-text', 0.1)">enlarge text</button>
+            </div>
+        `
+    });
+    new Vue({
+        el: '#app12',
+        data: {
+            inputText:"",
+            postFontSize: 1,
+            posts: [
+                { id: 1, title: 'My journey with Vue' },
+                { id: 2, title: 'Blogging with Vue' },
+                { id: 3, title: 'Why Vue is so fun' }
+            ]
+        },
+        methods:{
+            enlargeFontSize: function(num) {
+                this.postFontSize += num;
+            }
+        }
+    })
+
+    var app11 = new Vue({
+        el:"#app11",
+        data:{
+            checkNames:[],
+            selected:[]
+        }
+    });
+
+    Vue.component("todo-item1", {
+        template:
+        "<li>{{title}}" +
+            "<button @click='$emit(\"remove\")'>remove</button>" +
+        "</li>",
+        props:['title']
+    });
+    var todoList = new Vue({
+        el: "#todo-list",
+        data:{
+            newTodoText:"",
+            todos:[
+                {id:1, title:"do 111"},
+                {id:2, title:"do 222"},
+                {id:3, title:"do 333"}
+            ],
+            nextTodoId: 4
+        },
+        methods: {
+            addNewTodo:function() {
+                this.todos.push({
+                    id:this.nextTodoId++,
+                    title: this.newTodoText
+                });
+                this.newTodoText = "";
+            },
+            removeItem:function(index) {
+                this.todos.splice(index,1);
+            }
+        }
+    });
+
+    var app10 = new Vue({
+        el:"#app10",
+        data: {
+            parentMessage: "parent",
+            items: [
+                {message: "1111"},
+                {message: "2222"}
+            ],
+            object: {
+                a:1,
+                b:2,
+                c:3
+            },
+            numbers: [1,2,3,4,5,6,7]
+        },
+        methods: {
+            even:function(nums) {
+                return nums.filter(function(number) {
+                    return number % 2 === 0;
+                });
+            }
+        }
+    });
+
     var app9 = new Vue({
         el:"#app9",
         data:{
