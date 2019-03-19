@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="./lib/vue.js"></script>
+</head>
+<body>
+    <canvas id="testCanvas"></canvas>
+    <button id="toggle">toggle</button>
+<script>
+    var worker = new Worker("testWorker.js");
+
+    var canvas = document.getElementById("testCanvas");
+    canvas.width = 400;
+    canvas.height = 400;
+    var offscreen = canvas.transferControlToOffscreen();
+
+    worker.postMessage({canvas:offscreen, init: true}, [offscreen]);
+
+    var render = false;
+
+    function loop() {
+        requestAnimationFrame(loop);
+        if(render) {
+            worker.postMessage("update");
+        }
+    }
+    loop();
+
+    var btn = document.getElementById("toggle");
+    btn.onclick=function() {
+        render = !render;
+        // worker.postMessage("stop");
+        // worker.terminate();
+    }
+</script>
+</body>
+</html>
