@@ -34,6 +34,32 @@
         // worker.postMessage("stop");
         // worker.terminate();
     }
+
+    /**
+     * 主线程操作Worker线程对象的属性和方法：
+     * Worker.onerror:指定error事件的监听函数
+     * Worker.onmessage:指定message事件的监听函数，发送过来的数据在Event.data属性中
+     * Worker.onmessageerror:指定messageerror事件的监听函数。发送的数据无法序列化成字符串时，会触发这个事件
+     * Worker.postMessage():向Worker线程发送消息
+     * Worker.terminate():立即终止Worker线程
+     *
+     * Worker线程自己的全局属性和方法：
+     * self.name： Worker 的名字。该属性只读，由构造函数指定
+     * self.onmessage：指定message事件的监听函数
+     * self.onmessageerror：指定 messageerror 事件的监听函数。发送的数据无法序列化成字符串时，会触发这个事件
+     * self.close()：关闭 Worker 线程
+     * self.postMessage()：向产生这个 Worker 线程发送消息
+     * self.importScripts()：加载 JS 脚本
+     */
+
+    function fib(n) {
+        if(n === 1) return 1;
+        if(n === 2) return 2;
+        if(n >= 3) {
+            return fib(n-1) + fib(n-2);
+        }
+    }
+    console.log(fib(10));
 </script>
 </body>
 </html>
