@@ -52,6 +52,112 @@
      * self.importScripts()：加载 JS 脚本
      */
 
+    /**
+     * 防抖函数
+     */
+    function debounce(fn,delay) {
+        var timer = null;
+        return function() {
+            var self = this;
+            if(timer) clearTimeout(timer);
+            timer = setTimeout(function() {
+                fn.apply(self);
+            }, delay);
+        }
+    }
+
+    // window.onresize = debounce(function(){
+    //     console.log("111");
+    // }, 200);
+    // window.onresize = throttle(function(){
+    //     console.log("111");
+    // }, 500);
+
+    /**
+     * 节流函数
+     */
+    function throttle(fn, delay) {
+        var pre = 0;
+        return function() {
+            var now = Date.now();
+            var self = this;
+            if(now-pre>delay) {
+                fn.apply(self);
+                pre = now;
+            }
+        }
+    }
+
+    /**
+     * 手写bind函数
+     */
+    Function.prototype.bind = function(ctx) {
+        var self = this;
+        return function() {
+            fn.apply(ctx, arguments);
+        }
+    }
+
+    /**
+     * 快速排序
+     */
+    function quickSort(arr) {
+        if(arr.length <= 0) return arr;
+
+        var mid = Math.floor(arr.length/2);
+        var midValue = arr.splice(mid, 1)[0];
+        var left = [],
+            right = [];
+
+        for(var i = 0; i < arr.length; i++) {
+            if(arr[i]<midValue) {
+                left.push(arr[i]);
+            } else {
+                right.push(arr[i]);
+            }
+        }
+
+        return quickSort(left).concat(midValue, quickSort(right));
+    }
+    var arr = [10, 2, 3,28,39,8,18];
+    // console.log(quickSort(arr));
+
+    /**
+     * 归并排序
+     */
+    function mergeSort(arr) {
+        var l = arr.length;
+        if(l <=1) return arr;
+
+        var mid = Math.floor(l/2);
+        var left = arr.slice(0, mid);
+        var right = arr.slice(mid, l);
+
+        return merge(mergeSort(left), mergeSort(right));
+    }
+    function merge(left, right) {
+        var result = [];
+        while(left.length > 0 && right.length > 0) {
+            if(left[0] < right[0]) {
+                result.push(left.shift());
+            } else {
+                result.push(right.shift());
+            }
+        }
+        while(left.length > 0) {
+            result.push(left.shift());
+        }
+
+        while(right.length > 0) {
+            result.push(right.shift());
+        }
+        return result;
+    }
+    console.log(mergeSort(arr));
+
+    /**
+     * 斐波那契数列
+     */
     function fib(n) {
         if(n === 1) return 1;
         if(n === 2) return 2;
@@ -59,7 +165,124 @@
             return fib(n-1) + fib(n-2);
         }
     }
-    console.log(fib(10));
+    function fib1(n) {
+        let arr = new Array();
+        arr[0] = 1;
+        arr[1] = 2;
+        for(let i=2; i < n; i++) {
+            arr[i] = arr[i-1] + arr[i-2];
+        }
+        return arr[n-1];
+    }
+
+    /**
+     * 放置炸弹
+     */
+    var map = [
+        [2, 2, 2, 2, 2, 2, 2],
+        [2, 0, 0, 0, 0, 1, 2],
+        [2, 0, 1, 0, 2, 0, 2],
+        [2, 0, 0, 0, 0, 1, 2],
+        [2, 2, 0, 0, 0, 0, 2],
+        [2, 0, 1, 0, 0, 0, 2],
+        [2, 2, 2, 2, 2, 2, 2]
+    ];
+
+    function getBestPos(map) {
+        var n = map.length,
+            m = map[0].length;
+        var sum = 0, total = 0;
+        var arr = [];
+        for(var i = 0; i < n; i++) {
+            for(var j = 0; j < m; j++) {
+                if(map[i][j] === 0) {
+                    sum = 0;
+                    var x = i,
+                        y = j;
+
+                    while(map[x][y] !== 2) {
+                        if(map[x][y] === 1) {
+                            sum++;
+                        }
+                        x++;
+                    }
+
+                    x = i;
+                    y = j;
+
+                    while(map[x][y] !== 2) {
+                        if(map[x][y] === 1) {
+                            sum++;
+                        }
+                        x--;
+                    }
+
+                    x = i;
+                    y = j;
+
+                    while(map[x][y] !== 2) {
+                        if(map[x][y] === 1) {
+                            sum++;
+                        }
+                        y--;
+                    }
+
+                    x = i;
+                    y = j;
+
+                    while(map[x][y] !== 2) {
+                        if(map[x][y] === 1) {
+                            sum++;
+                        };
+                        y++;
+                    }
+
+                    if(sum > total) {
+                        arr = [];
+                        total = sum;
+                        arr.push({
+                            total: total,
+                            x: i,
+                            y: j
+                        });
+                    } else if(sum === total) {
+                        arr.push({
+                            total: total,
+                            x: i,
+                            y: j
+                        });
+                    }
+                }
+            }
+        }
+        return arr;
+    }
+    console.log(getBestPos(map));
+
+    /**
+     * A*寻路
+     * F = G + H，公式来找出开启列表中相对最靠谱的方块
+     * https://www.cnblogs.com/mingbujian/p/4915546.html
+     * http://www.cnblogs.com/technology/archive/2011/05/26/2058842.html
+     * https://www.cnblogs.com/huansky/p/5572631.html
+     */
+    var map1 = [
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 1, 0, 0, 0],
+        [0, 2, 0, 1, 0, 3, 0],
+        [0, 0, 0, 1, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+    ];
+    function Node() {
+    }
+    function getPath(map) {
+
+    }
+
+    /**
+     * 贪心算法？
+     * https://blog.csdn.net/broadview2006/article/details/80127076
+     */
 </script>
 </body>
 </html>
